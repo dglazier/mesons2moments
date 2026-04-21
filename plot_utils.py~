@@ -1,0 +1,49 @@
+import matplotlib.pyplot as plt
+import math
+
+def plot_moments(Mx, moments, max_rows=6, max_cols=4):
+    """
+    Plots all generated moments on a grid. Automatically paginates 
+    into multiple figures if the number of moments exceeds max_rows * max_cols.
+    """
+    # Sort the moments logically: first by L, then by M
+    sorted_keys = sorted(moments.keys(), key=lambda k: (k[0], k[1]))
+    total_plots = len(sorted_keys)
+    plots_per_canvas = max_rows * max_cols
+    
+    # Calculate how many separate figures (canvases) we need
+    num_canvases = math.ceil(total_plots / plots_per_canvas)
+    
+    for canvas_idx in range(num_canvases):
+        fig, axes = plt.subplots(max_rows, max_cols, figsize=(16, 12))
+        axes = axes.flatten()
+        
+        start_idx = canvas_idx * plots_per_canvas
+        
+        for i in range(plots_per_canvas):
+            ax = axes[i]
+            global_idx = start_idx + i
+            
+            if global_idx < total_plots:
+                # We have a moment to plot here
+                L, M_proj = sorted_keys[global_idx]
+                
+                ax.plot(Mx, moments[(L, M_proj)], color='navy', lw=2)
+                
+                ax.set_title(f"H({L}, {M_proj})", fontsize=12, fontweight='bold')
+                ax.set_xlabel("Mass (GeV)")
+                ax.grid(True, linestyle='--', alpha=0.6)
+                
+                # Add a horizontal line at 0 for reference
+                ax.axhline(0, color='black', lw=1, alpha=0.8)
+            else:
+                # Hide unused subplots on the last canvas
+                ax.axis('off')
+                
+        plt.tight_layout()
+        
+        # Give the canvas a title indicating pagination
+        fig.canvas.manager.set_window_title(f"Moments Canvas {canvas_idx + 1} of {num_canvases}")
+        
+    # Show all generated canvases simultaneously
+    plt.show()

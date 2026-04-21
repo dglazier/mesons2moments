@@ -1,0 +1,95 @@
+import numpy as np
+from scipy.integrate import simpson
+from partial_wave import PartialWave
+import cg_engine as cg
+
+class AmplitudeModel:
+    def __init__(self, Mx_min, Mx_max, num_bins, m1=0.1395, m2=0.1395):
+        """
+        Initializes the model over a specific mass window.
+        Mx_min, Mx_max: Mass window limits (GeV).
+        num_bins: Number of evaluation points.
+        m1, m2: Decay product masses (defaults to charged pions).
+        """
+        self.Mx = np.linspace(Mx_min, Mx_max, num_bins)
+        self.waves = []
+        self.m1 = m1
+        self.m2 = m2
+
+    def add_wave(self, particle, L, M, epsilon, fraction, phase=0.0):
+        """
+        Adds a partial wave to the model.
+        """
+        wave = PartialWave(
+            name_or_dict=particle, L=L, M=M, epsilon=epsilon, 
+            fraction=fraction, phase=phase, 
+            m1=self.m1, m2=self.m2
+        )
+        self.waves.append(wave)
+
+    def _normalize_waves(self):
+        """
+        Internal engine method. Normalizes the coupling of each wave so that its 
+        isolated integrated yield matches the user's requested fraction.
+        """
+        normalized_amplitudes = []
+        
+        for wave in self.waves:
+            # 1. Get the raw unscaled dynamical shape
+            raw_shape = wave.get_shape(self.Mx)
+            
+            # 2. Integrate the squared magnitude (intensity) over the mass window
+            intensity = np.abs(raw_shape)**2
+            raw_yield = simpson(y=intensity, x=self.Mx)
+            
+            if raw_yield <= 0:
+                # Safety check if the wave is entirely below threshold
+                C_k = 0.0
+            else:
+                # 3. Solve for the production coefficient C_k
+                C_k = np.sqrt(wave.fraction / raw_yield)
+            
+            # 4. Construct the fully populated complex amplitude array
+            complex_amp = C_k * np.exp(1j * wave.phase) * raw_shape
+            normalized_amplitudes.append((wave, complex_amp))
+            
+        return normalized_amplitudes
+
+    def generate_moments(self, L_max):
+        """
+        Calculates all non-zero moments up to L_max.
+        Returns a dictionary where keys are (L, M) tuples and values are intensity arrays.
+        """
+        normalized_amplitudes = self._normalize_waves()
+        moments = {}
+        
+        # Loop over all requested moments
+        for L in range(L_max + 1):
+            for M_proj in range(-L, L + 1):
+                H_LM = np.zeros_like(self.Mx, dtype=float)
+                
+                # Double loop over all wave pairs to calculate interference
+                for w1, A1 in normalized_amplitudes:
+                    for w2, A2 in normalized_amplitudes:
+                        
+                        # Rule 1: Different reflectivities DO NOT interfere
+                        if w1.epsilon != w2.epsilon:
+                            continue
+                            
+                        # Grab the exact Clebsch-Gordan geometry factor
+                        factor = cg.get_moment_factor(w1.L, w1.M, w2.L, w2.M, L, M_proj)
+                        
+                        if factor == 0.0:
+                            continue
+                            
+                        # Coherent bilinear product: A1 * A2*
+                        bilinear = A1 * np.conj(A2)
+                        
+                        # Physical observables are strictly real
+                        H_LM += factor * np.real(bilinear)
+                        
+                # Only save the array to memory if it actually contains signal
+                if np.any(H_LM != 0):
+                    moments[(L, M_proj)] = H_LM
+                    
+        return moments
