@@ -1,0 +1,4 @@
+pwa_env/
+__pycache__/
+*.csv
+*~
