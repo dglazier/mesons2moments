@@ -4,6 +4,8 @@
 
 Designed specifically for photoproduction analyses (like those at CLAS or GlueX), the engine strictly enforces angular momentum addition rules via Clebsch-Gordan coefficients, operates in the reflectivity basis, and automatically queries the Particle Data Group (PDG) database to construct exact relativistic Breit-Wigner shapes.
 
+![Description of the image](ExampleMoments.png)
+
 ## Features
 * **Full Coherence:** Handles complex interference between S, P, D, and F waves, automatically mapping out mass-dependent phase dynamics (e.g., resonance dips and zero-crossings).
 * **Polarized Observables:** Generates unpolarized moments ($\alpha=0$) as well as linear and circular polarized observables ($\alpha=1, 2, 3$) using the Mathieu reflectivity prescription.
