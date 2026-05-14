@@ -13,6 +13,20 @@ Designed specifically for photoproduction analyses (like those at CLAS or GlueX)
 * **Auto-Renormalization:** Input relative wave fractions, and the engine dynamically renormalizes the production amplitudes to conserve total yield.
 * **Data Export & Visualization:** Automatically handles plotting kinematic arrays and exporting data to clean, analysis-ready CSV files.
 
+## Interactive Web Apps (Streamlit)
+
+Alongside the core physics engine, this repository includes two interactive, browser-based applications designed to build intuition for partial wave interference without writing code.
+
+* **[PWA Intensity Generator](Generator.md)** (`pwa_generator.py`): An introductory sandbox designed for teaching. Users can select mesons from a visual PDG roster, adjust their kinematic limits, and immediately visualize how the quantum mechanical probability waves overlap and interfere to create the angular fingerprints observed in detectors. Note: Ensure local image assets (`collision_schematic.jpg`, `harmonics.png`) are in the same directory for the primer page to render correctly.
+* **[PWA Particle Game](ParticleGameOverview.md)** (`pwa_particle_game.py`): A gamified, graduate-level training tool. The engine secretly generates a target intensity distribution ("Truth") using the JPAC photoproduction formalism. Users must act as the fitter—manually reconstructing the cross-section by selecting the correct interfering resonances, reflectivities, and phases to minimize the $\chi^2$ and discover the underlying states.
+
+To launch either of the web applications, use Streamlit from your terminal:
+```bash
+streamlit run pwa_generator.py
+# or
+streamlit run pwa_particle_game.py
+```
+
 ## Installation
 
 It is recommended to run this in a Python virtual environment. 
@@ -24,9 +38,9 @@ It is recommended to run this in a Python virtual environment.
    ```
 
 2. **Install the required dependencies:**
-   The physics and data engines require a few standard scientific Python libraries:
+   The physics and data engines require a few standard scientific Python libraries, and the web apps require Streamlit:
    ```bash
-   pip install numpy scipy pandas matplotlib particle
+   pip install numpy scipy pandas matplotlib particle streamlit
    ```
 
 ## File Structure
@@ -36,6 +50,7 @@ It is recommended to run this in a Python virtual environment.
 * **`cg_engine.py`**: The Clebsch-Gordan calculator enforcing parity and angular momentum selection rules for $\langle l_1, m_1; l_2, m_2 | L, M \rangle$.
 * **`io_utils.py` / `plot_utils.py`**: Helpers for exporting $H(L,M)$ dictionaries to pandas DataFrames/CSVs and paginating Matplotlib visualizations.
 * **`develop.py`**: A robust unit-testing suite to verify all physics outputs and geometry factors are working properly.
+* **`pwa_generator.py` & `pwa_particle_game.py`**: Interactive Streamlit web interfaces for the engine.
 
 ## Usage 
 
