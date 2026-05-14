@@ -13,19 +13,6 @@ Designed specifically for photoproduction analyses (like those at CLAS or GlueX)
 * **Auto-Renormalization:** Input relative wave fractions, and the engine dynamically renormalizes the production amplitudes to conserve total yield.
 * **Data Export & Visualization:** Automatically handles plotting kinematic arrays and exporting data to clean, analysis-ready CSV files.
 
-## Interactive Web Apps (Streamlit)
-
-Alongside the core physics engine, this repository includes two interactive, browser-based applications designed to build intuition for partial wave interference without writing code.
-
-* **[PWA Intensity Generator](Generator.md)** (`pwa_generator.py`): An introductory sandbox designed for teaching. Users can select mesons from a visual PDG roster, adjust their kinematic limits, and immediately visualize how the quantum mechanical probability waves overlap and interfere to create the angular fingerprints observed in detectors. Note: Ensure local image assets (`collision_schematic.jpg`, `harmonics.png`) are in the same directory for the primer page to render correctly.
-* **[PWA Particle Game](ParticleGameOverview.md)** (`pwa_particle_game.py`): A gamified, graduate-level training tool. The engine secretly generates a target intensity distribution ("Truth") using the JPAC photoproduction formalism. Users must act as the fitter—manually reconstructing the cross-section by selecting the correct interfering resonances, reflectivities, and phases to minimize the $\chi^2$ and discover the underlying states.
-
-To launch either of the web applications, use Streamlit from your terminal:
-```bash
-streamlit run pwa_generator.py
-# or
-streamlit run pwa_particle_game.py
-```
 
 ## Installation
 
@@ -100,6 +87,20 @@ Waves are defined using `model.add_wave(particle, l, m, epsilon, fraction, phase
 * **`epsilon`**: Reflectivity eigenvalue ($\pm 1$).
 * **`fraction`**: Approximate total intensity contribution of this wave. If the total fractions exceed `1.0`, they are proportionally scaled down.
 * **`phase`**: Relative complex phase in radians. Adjusting these by $\pi$ flips the sign of interference cross-terms (e.g., reversing the structure of an $S-P$ interference moment).
+
+## Interactive Web Apps (Streamlit)
+
+Alongside the core physics engine, this repository includes two interactive, browser-based applications designed to build intuition for partial wave interference without writing code.
+
+* **[PWA Intensity Generator](Generator.md)** (`pwa_generator.py`): An introductory sandbox designed for teaching. Users can select mesons from a visual PDG roster, adjust their kinematic limits, and immediately visualize how the quantum mechanical probability waves overlap and interfere to create the angular fingerprints observed in detectors. Note: Ensure local image assets (`collision_schematic.jpg`, `harmonics.png`) are in the same directory for the primer page to render correctly.
+* **[PWA Particle Game](ParticleGameOverview.md)** (`pwa_particle_game.py`): A gamified, graduate-level training tool. The engine secretly generates a target intensity distribution ("Truth") using the JPAC photoproduction formalism. Users must act as the fitter—manually reconstructing the cross-section by selecting the correct interfering resonances, reflectivities, and phases to minimize the $\chi^2$ and discover the underlying states.
+
+To launch either of the web applications, use Streamlit from your terminal:
+```bash
+streamlit run pwa_generator.py
+# or
+streamlit run pwa_particle_game.py
+```
 
 ## Notes on Mathematics
 The moment summation strictly enforces $\Delta m$ selection rules and evaluates the combinations:
